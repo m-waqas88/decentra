@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { getGlobalState, setGlobalState, useGlobalState } from "context";
-import { useMutation } from "@apollo/client";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import { LOGIN_GET_MESSAGE } from "../../graphql/LoginGetMessage";
 import { LOGIN_VERIFY } from "../../graphql/LoginVerify";
+import { GET_PROFILE } from "../../graphql/GetProfile";
 
 // blockchain bridge
 import { ethers } from "ethers";
@@ -44,6 +45,7 @@ const SigninButton = () => {
     const [accessToken] = useGlobalState("accessToken");
     const [loginGetMessage] = useMutation(LOGIN_GET_MESSAGE);
     const [loginVerify] = useMutation(LOGIN_VERIFY);
+    const [getProfile] = useLazyQuery(GET_PROFILE);
 
     useEffect(() => {
         isWalletConnected();
@@ -76,12 +78,22 @@ const SigninButton = () => {
         const accessToken = accessTokenResult?.data?.loginVerify?.accessToken;
         localStorage.setItem("accessToken", accessToken);
         setGlobalState("accessToken", accessToken);
+        console.log(accessToken);
+        const profilesResult = await getProfile({
+            variables: {
+                address: account,
+            }
+        });
+        const primaryProfiles = profilesResult?.data?.address?.wallet?.primaryProfile;        const profileId = primaryProfiles.profileID.toString();
+        const profileObject = JSON.stringify({
+            profileId: primaryProfiles.profileID.toString(),
+            profileHandle: primaryProfiles.handle,
+        });
+        localStorage.setItem(account, profileObject);
     }
-
     return (
         <button onClick={handleClick}>Sign in</button>
     )
-
 }
 
 export default SigninButton;

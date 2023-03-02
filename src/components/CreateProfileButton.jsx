@@ -9,11 +9,6 @@ import ProfileNFTABI from "../../abi/ProfileNFT.json";
 
 const CreateProfileButton = ({handle, avatar, name, bio}) => {
     const router = useRouter();
-
-    // useEffect(() => {
-        
-    // });
-
     const handleClick = async () => {
         try{
             const { ethereum } = window;
@@ -27,13 +22,11 @@ const CreateProfileButton = ({handle, avatar, name, bio}) => {
                 version: "1.0.0"
             }
             const ipfsHash = await pinJSONToIPFS(metadata);
-
             const contract = new ethers.Contract(
                 PROFILE_NFT_CONTRACT,
                 ProfileNFTABI,
                 signer
             );
-
             const tx = await contract.createProfile(
                 {
                     to: account,
@@ -52,13 +45,10 @@ const CreateProfileButton = ({handle, avatar, name, bio}) => {
         }catch(error){
             reportError(error);
         }
-        
     }
-
     return (
         <button onClick={handleClick}>Create Profile</button>
     )
-
 }
 
 export default CreateProfileButton;
