@@ -1,18 +1,19 @@
 import { useRouter } from "next/router";
-import { getGlobalState, setGlobalState, useGlobalState } from "context";
 import { pinJSONToIPFS } from "helpers/functions";
 import { PROFILE_NFT_CONTRACT } from "helpers/constants";
 import ProfileNFTABI from "../../abi/ProfileNFT.json";
 import { ethers, utils } from "ethers";
 import { v4 as uuidv4 } from "uuid";
+import { globalContext } from "context/globalContext";
+import { useContext } from "react";
 
 const CreatePostButton = ({ nftImageUrl, content }) => {
+    const { connectedAccount, accessToken } = useContext(globalContext);
     const router = useRouter();
-    const accessToken = getGlobalState("accessToken");
     const handleClick = async () => {
         try {
             const { ethereum } = window;
-            const account = getGlobalState("connectedAccount")
+            const account = connectedAccount;
             const provider = new ethers.providers.Web3Provider(ethereum);
             const signer = provider.getSigner();
             const profile = JSON.parse(localStorage.getItem(account));
@@ -25,15 +26,17 @@ const CreatePostButton = ({ nftImageUrl, content }) => {
                 lang: "en",
                 issue_date: new Date().toISOString(),
                 content: content,
+                image: nftImageUrl ?? "",
+                /*
                 media: [],
                 tags: [],
-                image: nftImageUrl ?? "",
                 image_data: "",
                 name: `@${profileHandle}'s post`,
                 description: `@${profileHandle}'s post on Decentra`,
                 aimation_url: "",
                 external_url: "",
                 attributes: [],
+                */
             }
             const ipfsHash = await pinJSONToIPFS(metadata);
             const contract = new ethers.Contract(
@@ -57,7 +60,7 @@ const CreatePostButton = ({ nftImageUrl, content }) => {
                     1000,
                     amount,
                     account,
-                    "0x326C977E6efc84E512bB9C30f76E30c160eD06FB",
+                    "0xce91C2bbEdfda8A120fD4884d720725E5E1D7d30",
                     false
                 ]
             );
@@ -66,7 +69,8 @@ const CreatePostButton = ({ nftImageUrl, content }) => {
                     profileId,
                     name: "Post",
                     symbol: "POST",
-                    essenceTokenURI: ipfsHash,
+                    // essenceTokenURI: `https://gateway.pinata.cloud/ipfs/${ipfsHash}`,
+                    essenceTokenURI: `https://${ipfsHash}.ipfs.w3s.link/meta.json`,
                     essenceMw: "0x7FD80D2c47eD1f204851f2809f54f5A31E4d55a3",
                     transferable: true,
                     deployAtRegister: true,
@@ -76,7 +80,7 @@ const CreatePostButton = ({ nftImageUrl, content }) => {
                     gasLimit: 30000000,
                 }
             );
-            tx.wait(1);
+            await tx.wait(1);
             console.log(tx);
             console.log("Post created successfully");
             router.push("/");

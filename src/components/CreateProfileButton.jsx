@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { getGlobalState, setGlobalState, useGlobalState } from "context";
+import { getGlobalState, setGlobalState, useGlobalState } from "context/globalContext";
 import { useMutation } from "@apollo/client";
 import { PROFILE_NFT_CONTRACT, PROFILE_NFT_OPERATOR } from "helpers/constants";
 import { pinJSONToIPFS } from "helpers/functions";
