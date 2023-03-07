@@ -8,7 +8,7 @@ import { globalContext } from "context/globalContext";
 import { useContext } from "react";
 
 const CreatePostButton = ({ nftImageUrl, content, setLoadingStatus }) => {
-    const { connectedAccount, accessToken } = useContext(globalContext);
+    const { connectedAccount } = useContext(globalContext);
     const router = useRouter();
     const handleClick = async () => {
         try {
@@ -85,7 +85,7 @@ const CreatePostButton = ({ nftImageUrl, content, setLoadingStatus }) => {
                 console.log(tx);
                 setLoadingStatus(false);
                 console.log("Post created successfully");
-                router.push("/?newPostCreated=true");
+                router.push("/?newPost=true");
             })
             .catch((error) => {
                 console.log(error);

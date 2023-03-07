@@ -4,7 +4,25 @@ import { useContext, useState, useEffect } from "react";
 import { globalContext } from "context/globalContext";
 
 const NavBar = () => {
-    const { setConnectedAccount, connectedAccount, walletStatus, setWalletStatus, accessToken } = useContext(globalContext);
+  const { setConnectedAccount, connectedAccount, walletStatus, setWalletStatus } = useContext(globalContext);
+  const [accessToken, setAccessToken] = useState("");
+  const walletConnected = async(ethereum) => {
+    try{
+        if(!ethereum) {
+          console.log("Please connect wallet");
+          return
+        }
+        const accounts = await ethereum.request({
+            method: "eth_accounts"
+        });
+        if(accounts.length){
+          return true;
+        }
+        return false;     
+    }catch(error){
+      reportError(error)
+    }
+} 
   const connectWallet = async() => {
     const { ethereum } = window;
     try{
@@ -17,15 +35,23 @@ const NavBar = () => {
         });
         const connectedAccount = accounts[0].toLowerCase();
         setConnectedAccount(connectedAccount);
-        setWalletStatus(true);
+        const walletStatus = walletConnected();
+        setWalletStatus(walletStatus);
     }catch(error){
         console.log(error);
     }
-  } 
+  }
 
   const formattedAddressFirstPart = connectedAccount.slice(0, 6);
   const formattedAddressLastPart = connectedAccount.slice(connectedAccount.length - 6, connectedAccount.length);
   const formattedAddress = formattedAddressFirstPart + "--" + formattedAddressLastPart;
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if(accessToken){
+      setAccessToken(accessToken);
+    }
+  });
 
   return (
     <>
@@ -42,7 +68,7 @@ const NavBar = () => {
           )
         }
         {
-          accessToken && (
+          accessToken && walletStatus && (
             <>
               <Link href="/create-profile" className="px-4">
                 Create Profile

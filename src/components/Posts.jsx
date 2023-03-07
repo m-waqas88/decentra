@@ -7,10 +7,11 @@ import { globalContext } from "context/globalContext";
 import { GET_PROFILE } from "../../graphql/GetProfile";
 import { useRouter } from "next/router";
 
-const Posts = () => {
+
+const Posts = () => { 
   const router = useRouter();
-  const { newPostCreated } = router.query;  
-  const { connectedAccount, accessToken } = useContext(globalContext);
+  const { connectedAccount } = useContext(globalContext);
+  const [accessToken, setAccessToken] = useState("");
   const client = useApolloClient();
   const [filteredPosts, setFilteredPosts] = useState([]);
   const account = connectedAccount;
@@ -39,14 +40,16 @@ const Posts = () => {
       });
       return posts?.data?.profileByID?.essences?.edges;
     }
-
     const accessToken = localStorage.getItem("accessToken");
     if(accessToken){
+      setAccessToken(accessToken);
       getPosts().then((res) => {
           setFilteredPosts(res)
       });
     }
-  }, [newPostCreated]);
+    const { newPost } = router.query;
+    // if(newPost) window.location.reload();
+  });
 
   return (
     <>
@@ -57,7 +60,6 @@ const Posts = () => {
             const { tokenURI, essenceID } = post?.node;
             const metadata = post?.node?.metadata;
             if(metadata != null && index > 10){
-              console.log(index)
               const { content, image, issue_date } = post?.node?.metadata;
               return <PostCard key={essenceID} {...{essenceID,tokenURI, content, image, issue_date}} />
             }

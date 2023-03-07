@@ -6,7 +6,7 @@ import ProfileNFTABI from "../../abi/ProfileNFT.json";
 import { useContext } from "react";
 import { globalContext } from "context/globalContext";
 
-const CreateProfileButton = ({handle, avatar, name, bio, loadingStatus, setLoadingStatus}) => {
+const CreateProfileButton = ({handle, avatar, name, bio, setLoadingStatus}) => {
     const { connectedAccount } = useContext(globalContext);
     const router = useRouter();
     const handleClick = async () => {
