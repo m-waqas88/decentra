@@ -1,18 +1,19 @@
-import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { getGlobalState, setGlobalState, useGlobalState } from "context/globalContext";
-import { useMutation } from "@apollo/client";
 import { PROFILE_NFT_CONTRACT, PROFILE_NFT_OPERATOR } from "helpers/constants";
 import { pinJSONToIPFS } from "helpers/functions";
 import { ethers } from "ethers";
 import ProfileNFTABI from "../../abi/ProfileNFT.json";
+import { useContext } from "react";
+import { globalContext } from "context/globalContext";
 
-const CreateProfileButton = ({handle, avatar, name, bio}) => {
+const CreateProfileButton = ({handle, avatar, name, bio, loadingStatus, setLoadingStatus}) => {
+    const { connectedAccount } = useContext(globalContext);
     const router = useRouter();
     const handleClick = async () => {
         try{
+            setLoadingStatus(true);
             const { ethereum } = window;
-            const account = getGlobalState("connectedAccount")
+            const account = connectedAccount;
             const provider = new ethers.providers.Web3Provider(ethereum);
             const signer = provider.getSigner();
             const metadata = {
@@ -41,13 +42,14 @@ const CreateProfileButton = ({handle, avatar, name, bio}) => {
             await tx.wait(2);
             const profileId = await contract.getProfileIdByHandle(handle);
             console.log(`Transaction hash: ${tx.hash} and ProfileId: ${profileId}`);
+            setLoadingStatus(false);
             router.push("/");
         }catch(error){
             reportError(error);
         }
     }
     return (
-        <button onClick={handleClick}>Create Profile</button>
+        <button className="mx-1 bg-black text-white rounded-2xl w-1/2 px-4 py-2" onClick={handleClick}>Create Profile</button>
     )
 }
 

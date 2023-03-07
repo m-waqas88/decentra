@@ -2,7 +2,6 @@ import { ethers } from "ethers";
 import { useMutation, useApolloClient} from "@apollo/client";
 import { LOGIN_GET_MESSAGE } from "../../graphql/LoginGetMessage";
 import { LOGIN_VERIFY } from "../../graphql/LoginVerify";
-import { GET_PROFILE } from "../../graphql/GetProfile";
 import { useContext } from "react";
 import { globalContext } from "context/globalContext";
 
@@ -26,35 +25,26 @@ const SigninButton = () => {
             }
         });
         const message = messageResult?.data?.loginGetMessage?.message;
-        const signature = await signer.signMessage(message);
-        const accessTokenResult = await loginVerify({
-            variables: {
-                input: {
-                    address: account,
-                    domain: "test.com",
-                    signature: signature,
+        await signer.signMessage(message)
+        .then(async(signature) => {
+            const accessTokenResult = await loginVerify({
+                variables: {
+                    input: {
+                        address: account,
+                        domain: "test.com",
+                        signature: signature,
+                    }
                 }
-            }
-        });
-        const accessToken = accessTokenResult?.data?.loginVerify?.accessToken;
-        localStorage.setItem("accessToken", accessToken);
-        setAccessToken(accessToken);
-        const profilesResult = await client.query({
-            query: GET_PROFILE,
-            variables: {
-                address: account,
-            }
-        });
-        const primaryProfiles = profilesResult?.data?.address?.wallet?.primaryProfile;        
-        const profileObject = JSON.stringify({
-            profileId: primaryProfiles.profileID.toString(),
-            profileHandle: primaryProfiles.handle,
-        });
-        localStorage.setItem(account, profileObject);
+            });
+            const accessToken = accessTokenResult?.data?.loginVerify?.accessToken;
+            localStorage.setItem("accessToken", accessToken);
+            setAccessToken(accessToken);   
+        })
+        .catch((error) => {
+            console.log(error);
+        });;  
     }
-    
     return <button onClick={handleClick} className="px-4 mx-1 bg-black text-white rounded-2xl">Sign In</button>
-
 }
 
 export default SigninButton;

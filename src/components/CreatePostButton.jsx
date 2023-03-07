@@ -7,11 +7,12 @@ import { v4 as uuidv4 } from "uuid";
 import { globalContext } from "context/globalContext";
 import { useContext } from "react";
 
-const CreatePostButton = ({ nftImageUrl, content }) => {
+const CreatePostButton = ({ nftImageUrl, content, setLoadingStatus }) => {
     const { connectedAccount, accessToken } = useContext(globalContext);
     const router = useRouter();
     const handleClick = async () => {
         try {
+            setLoadingStatus(true);
             const { ethereum } = window;
             const account = connectedAccount;
             const provider = new ethers.providers.Web3Provider(ethereum);
@@ -64,7 +65,7 @@ const CreatePostButton = ({ nftImageUrl, content }) => {
                     false
                 ]
             );
-            const tx = await contract.registerEssence(
+            await contract.registerEssence(
                 {
                     profileId,
                     name: "Post",
@@ -77,19 +78,25 @@ const CreatePostButton = ({ nftImageUrl, content }) => {
                 },
                 abiEncodedData,
                 {
-                    gasLimit: 30000000,
+                    gasLimit: 1000000,
                 }
-            );
-            await tx.wait(1);
-            console.log(tx);
-            console.log("Post created successfully");
-            router.push("/");
+            ).then(async (tx) => {
+                await tx.wait(1);
+                console.log(tx);
+                setLoadingStatus(false);
+                console.log("Post created successfully");
+                router.push("/?newPostCreated=true");
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+            
         } catch (error) {
             reportError(error);
         }
     }
     return (
-        <button onClick={handleClick}>Create Post</button>
+        <button className="mx-1 bg-black text-white rounded-2xl w-1/2 px-4 py-2" onClick={handleClick}>Create Post</button>
     )
 }
 
