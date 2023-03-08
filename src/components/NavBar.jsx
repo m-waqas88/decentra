@@ -29,9 +29,10 @@ const NavBar = () => {
   const formattedAddress = formattedAddressFirstPart + "--" + formattedAddressLastPart;
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if(accessToken){
-      setAccessToken(accessToken);
+    const myAccessToken = localStorage.getItem("accessToken");
+    console.log(`Access Token~: ${myAccessToken}`);
+    if(myAccessToken){
+      setAccessToken(myAccessToken);
     }
   }, []);
 
