@@ -34,7 +34,7 @@ const NavBar = () => {
     if(myAccessToken){
       setAccessToken(myAccessToken);
     }
-  }, []);
+  }, [accessToken]);
 
   return (
     <>
