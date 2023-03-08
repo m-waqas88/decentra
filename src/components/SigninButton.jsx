@@ -38,11 +38,12 @@ const SigninButton = () => {
             });
             const accessToken = accessTokenResult?.data?.loginVerify?.accessToken;
             localStorage.setItem("accessToken", accessToken);
-            setAccessToken(accessToken);   
+            setAccessToken(accessToken);  
+            window.location.reload(); 
         })
         .catch((error) => {
             console.log(error);
-        });;  
+        });
     }
     return <button onClick={handleClick} className="px-4 mx-1 bg-black text-white rounded-2xl">Sign In</button>
 }
