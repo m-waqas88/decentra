@@ -47,6 +47,7 @@ const CreateProfileButton = ({handle, avatar, name, bio, setLoadingStatus}) => {
         }catch(error){
             reportError(error);
         }
+        setLoadingStatus(false);
     }
     return (
         <button className="mx-1 bg-black text-white rounded-2xl w-1/2 px-4 py-2" onClick={handleClick}>Create Profile</button>
