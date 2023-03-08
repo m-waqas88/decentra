@@ -5,7 +5,6 @@ import { globalContext } from "context/globalContext";
 
 export default function Home() {
   const { walletStatus } = useContext(globalContext);
-  console.log(walletStatus);
   return (
     <>
       {

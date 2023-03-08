@@ -4,11 +4,14 @@ import { globalContext } from "context/globalContext";
 import { PROFILE_NFT_CONTRACT } from "helpers/constants";
 import ProfileNFTABI from "../../abi/ProfileNFT.json";
 
-const CollectButton = ({profileID, essenceID, isCollectedByMe}) => {
-    const { connectedAccount } = useContext(globalContext);
-    console.log(essenceID);
+const CollectButton = ({profileID, essenceID, setLoadingStatus, isCollectedByMe}) => {
+    const style = {
+        backgroundColor: "Gray"
 
+    }
+    const { connectedAccount } = useContext(globalContext);
     const handleClick = async () => {
+        setLoadingStatus(true);
         const { ethereum }  = window;
         const account = connectedAccount;
         const provider = new ethers.providers.Web3Provider(ethereum);
@@ -21,7 +24,7 @@ const CollectButton = ({profileID, essenceID, isCollectedByMe}) => {
         await contract.collect(
             {
                 collector: account,
-                profileId: Number(profileID),
+                profileId: 260,
                 essenceId: essenceID
             },
             0x0,
@@ -32,15 +35,17 @@ const CollectButton = ({profileID, essenceID, isCollectedByMe}) => {
         )
         .then(async (tx) => {
             await tx.wait(1);
-            console.log(`Transaction: ${tx}`);
+            setLoadingStatus(false)
+            console.log(`Transaction: ${tx.hash}`);
         })
         .catch((error) => {
+            setLoadingStatus(false);
             console.log(error);
         });
     }
     return (
         <>
-            <button className="px-4 mx-1 bg-black text-white rounded-2xl" onClick={handleClick} disabled={!profileID}>Collect</button>
+            <button style={isCollectedByMe ? style : {}} className="px-4 mx-1 bg-black text-white rounded-2xl" onClick={handleClick} disabled={!profileID || isCollectedByMe}>{isCollectedByMe ? "Collected" : "Collect"}</button>
             {
                 !profileID && (
                     <p>In order to collect the post, you must create a profile!</p>

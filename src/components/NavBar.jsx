@@ -6,23 +6,6 @@ import { globalContext } from "context/globalContext";
 const NavBar = () => {
   const { setConnectedAccount, connectedAccount, walletStatus, setWalletStatus } = useContext(globalContext);
   const [accessToken, setAccessToken] = useState("");
-  const walletConnected = async(ethereum) => {
-    try{
-        if(!ethereum) {
-          console.log("Please connect wallet");
-          return
-        }
-        const accounts = await ethereum.request({
-            method: "eth_accounts"
-        });
-        if(accounts.length){
-          return true;
-        }
-        return false;     
-    }catch(error){
-      reportError(error)
-    }
-} 
   const connectWallet = async() => {
     const { ethereum } = window;
     try{
@@ -35,8 +18,7 @@ const NavBar = () => {
         });
         const connectedAccount = accounts[0].toLowerCase();
         setConnectedAccount(connectedAccount);
-        const walletStatus = walletConnected();
-        setWalletStatus(walletStatus);
+        setWalletStatus(true);
     }catch(error){
         console.log(error);
     }
@@ -51,7 +33,7 @@ const NavBar = () => {
     if(accessToken){
       setAccessToken(accessToken);
     }
-  });
+  }, []);
 
   return (
     <>
