@@ -10,8 +10,11 @@ const PostCard = ({essenceID,tokenURI, content, image, issue_date, isCollectedBy
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [profileID, setProfileID] = useState("");
   useEffect(() => {
-    const profileid = JSON.parse(localStorage.getItem(connectedAccount)).profileId; 
-    setProfileID(profileid);
+    const profileObj = localStorage.getItem(connectedAccount);
+    if(profileObj){
+      const profileid = JSON.parse(localStorage.getItem(connectedAccount)).profileId; 
+      setProfileID(profileid);
+    }
   }, []);
 
   return (

@@ -45,10 +45,10 @@ const CollectButton = ({profileID, essenceID, setLoadingStatus, isCollectedByMe}
     }
     return (
         <>
-            <button style={isCollectedByMe ? style : {}} className="px-4 mx-1 bg-black text-white rounded-2xl" onClick={handleClick} disabled={!profileID || isCollectedByMe}>{isCollectedByMe ? "Collected" : "Collect"}</button>
+            <button style={isCollectedByMe || !profileID ? style : {}} className="px-4 mx-1 bg-black text-white rounded-2xl" onClick={handleClick} disabled={!profileID || isCollectedByMe}>{isCollectedByMe ? "Collected" : "Collect"}</button>
             {
                 !profileID && (
-                    <p>In order to collect the post, you must create a profile!</p>
+                    <p className="text-sm border border-red-800 px-4 py-2 mt-2 text-white">In order to collect the post, you must create a profile!</p>
                 )
             }
         </>
