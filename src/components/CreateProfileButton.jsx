@@ -38,6 +38,9 @@ const CreateProfileButton = ({handle, avatar, name, bio, setLoadingStatus}) => {
                 },
                 0x0,
                 0x0,
+                {
+                    gasLimit: 3000000,
+                }
             );
             await tx.wait(2);
             const profileId = await contract.getProfileIdByHandle(handle);
