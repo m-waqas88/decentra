@@ -12,11 +12,14 @@ export default function App({ Component, pageProps }) {
   const [connectedAccount, setConnectedAccount] = useState("");
 
   useEffect(() => {
-    window.ethereum.on("accountsChanged", () => {
-      console.log("account changed");
-      localStorage.removeItem("walletStatus");
-      if(walletStatus) window.location.reload();
-    })
+    const { ethereum } = window;
+    if(ethereum){
+      window.ethereum.on("accountsChanged", () => {
+        console.log("account changed");
+        localStorage.removeItem("walletStatus");
+        if(walletStatus) window.location.reload();
+      })
+    }
   }, [walletStatus]);
 
   return (
